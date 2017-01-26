@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 public class MainFragment extends Fragment {
 
-    int gridNumber = 0;
+    int gridNumber = 0; // Ranges from 0-2
 
     public MainFragment() {
         // Required empty public constructor
@@ -37,7 +37,7 @@ public class MainFragment extends Fragment {
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gridNumber = (gridNumber + 1) % 3;
+                gridNumber = (gridNumber + 1) % 3; // Changed to 0-2 from 1-3
                 BaseAdapter adapter = new ImageAdapter(getActivity(), gridNumber);
                 gridview.setAdapter(adapter);
                 MainActivity.stopAlert();
@@ -45,7 +45,9 @@ public class MainFragment extends Fragment {
         });
         BaseAdapter adapter = new ImageAdapter(getActivity(), gridNumber);
         gridview.setAdapter(adapter);
-
+        /*
+         * Go to the ImagePickerActivity if clicked on image
+         */
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -58,6 +60,9 @@ public class MainFragment extends Fragment {
         return view;
     }
 
+    /*
+     * If result was ok, close the activity.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

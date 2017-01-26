@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     public static MediaPlayer mediaPlayer;
     public static Vibrator v;
     int PERMISSIONS_GRANTED = 10;
+    int navItem = 0;
 
     /*
      * Inspired from myruns
@@ -71,10 +72,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        navItem = R.id.nav_main;
         checkPermissions(); // Check permissions first.
 
         super.onCreate(savedInstanceState);
+        if(savedInstanceState != null)
+        {
+            navItem = savedInstanceState.getInt("NAV");
+        }
         //this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -90,14 +95,25 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        PSMScheduler.setSchedule(this, 15, 46 , 00);
-        startAlert(this);
+        PSMScheduler.setSchedule(this); // Schedule for 12 30 and 6 30.
+        startAlert(this); // Sound the alert tone
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        MainFragment mainFragment = new MainFragment();
-        fragmentTransaction.add(R.id.content_main, mainFragment);
-        fragmentTransaction.commit();
+        if(navItem == R.id.nav_main)
+        {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            MainFragment mainFragment = new MainFragment();
+            fragmentTransaction.replace(R.id.content_main, mainFragment);
+            fragmentTransaction.commit();
+        }
+        else if(navItem == R.id.nav_results)
+        {
+            FragmentManager fragmentManager = getFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            ResultsFragment mainFragment = new ResultsFragment();
+            fragmentTransaction.replace(R.id.content_main, mainFragment);
+            fragmentTransaction.commit();
+        }
     }
 
     public static void startAlert(Context context)
@@ -154,6 +170,8 @@ public class MainActivity extends AppCompatActivity
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        /* Open whichever fragment has to be opened */
+        navItem = id;
         if(id == R.id.nav_main)
         {
             FragmentManager fragmentManager = getFragmentManager();
@@ -173,5 +191,12 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+        outState.putInt("NAV", navItem);
     }
 }

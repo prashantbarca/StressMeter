@@ -4,28 +4,20 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
-/*
- * Importing chart libraries
- */
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.view.Chart;
-import lecho.lib.hellocharts.view.LineChartView;
-
 public class ImagePickerActivity extends AppCompatActivity {
 
     /*
@@ -108,13 +100,25 @@ public class ImagePickerActivity extends AppCompatActivity {
                 break;
             default:break;
         }
-        /* Shared preferences to save the value of the stress clicked */
-        SharedPreferences keyValues = getSharedPreferences("stress_meter", MODE_PRIVATE);
-        SharedPreferences.Editor keyValuesEditor = keyValues.edit();
+
         String time = String.valueOf(System.currentTimeMillis()/1000);
-        keyValuesEditor.putString(time, String.valueOf(stressLevel));
-        keyValuesEditor.commit();
-        /* Shared preferences end here */
+
+        try
+        {
+            File root = Environment.getExternalStorageDirectory();
+            File file = new File(root, "stress.csv");
+            if(!file.exists())
+            {
+                file.createNewFile();
+            }
+            FileWriter fileWriter = new FileWriter(file, true);
+            fileWriter.write(time +","+stressLevel + "\n");
+            fileWriter.close();
+        }
+        catch(IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
         setResult(Activity.RESULT_OK, null); // Setting the result value
         finish();
     }
